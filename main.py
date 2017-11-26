@@ -53,7 +53,7 @@ def generate_file(good_names, raw_data):
 		item_price = SubElement(item, 'Item_Price')
 		item_price.text = i['retail_price']
 
-	with open('output.xml', 'w') as f:
+	with open(args.output_file, 'w') as f:
 		f.write(prettify(menu))
 
 
@@ -68,14 +68,16 @@ def log(result):
 
 		f.write(report)
 
-
+class Args:
+	def __init__(self):
+		self.good_name_file = 'good_confirmation.xlsx' # xlsx-файл с соответствием названия блюда и его id
+		self.raw_file = 'raw_data.xml' # xml-файл с информацией о блюдах
+		self.output_file = 'output.xml' # файл, куда будет выводиться результат
 
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description = "Title to pretty name converter")
-	parser.add_argument('--good-name-file', '-f1', help = 'File containing name and good id', required=True)
-	parser.add_argument('--raw-file', '-f2', help = 'Raw file with full information', required=True)
-	args = parser.parse_args()
+	args = Args()
+	
 	while True:
 		if check_changes():
 			try:
