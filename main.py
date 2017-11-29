@@ -47,8 +47,10 @@ def get_raw_data(args):
 def generate_file(good_names, raw_data):
 	menu = Element('menu')
 	for i in raw_data:
-		item = SubElement(menu, 'Item')
 		code = int(i['code'])
+		if code != args.object_code:
+			continue
+		item = SubElement(menu, 'Item')
 		item_name = SubElement(item, 'Item_Name_{}'.format(i['code']))
 		item_name.text = good_names.get(code, i['name'])
 		item_price = SubElement(item, 'Item_Price_{}'.format(i['code']))
@@ -57,41 +59,51 @@ def generate_file(good_names, raw_data):
 	with open(args.output_file, 'w') as f:
 		f.write(prettify(menu))
 
+	# orderer ask do not write xml-header (<?xml version="1.0" encoding="utf8"?>)
+	lines = open(args.output_file).readlines()
+	open(args.output_file, 'w').writelines(lines[1:-1])
 
 
-def log(result):
+
+def log(msg):
 	now = datetime.datetime.now()
+	report = '{} {}'.format(now, msg)
 	with open('log.txt', 'a') as f:
-		if result:
-			report = "{} Файл создан\n".format(now)
-		else:
-			report = "{} Ошибка при создании файла\n".format(now)
-
 		f.write(report)
 
 class Args:
+	object_code = 0
+
 	def __init__(self):
 		self.good_name_file = 'good_confirmation.xlsx' # xlsx-файл с соответствием названия блюда и его id
 		self.raw_file = 'raw_data.xml' # xml-файл с информацией о блюдах
 		self.output_file = 'output.xml' # файл, куда будет выводиться результат
+		self.object_number_file = 'object_number.txt' # файл, содержащий интересующий нас номер объекта
+
+		with open(self.object_number_file, 'r') as f:
+			try:
+				self.object_code = int(f.read())
+			except:
+				msg = "Ошибка. Некорректно указан файл с номером объекта или файл имеет некорректное содержимое"
+				print(msg)
+				log(msg)
+				exit()
+
+
+
 
 
 if __name__ == "__main__":
 	args = Args()
 
-	# with open(args.output_file, 'w') as f:
-	# 	f.write(u'cdsc')
-	# 	print(type(u'scsd'))
-	# exit()
-	
 	while True:
 		if check_changes():
 			try:
 				good_names = get_pretty_names(args)
 				raw_data = get_raw_data(args)
 				generate_file(good_names, raw_data)
-				log(True)
+				log("Файл создан")
 			except:
-				log(False)
+				log("Ошибка при создании файла")
 		exit()
 		sleep(60*60)
