@@ -44,26 +44,38 @@ def get_raw_data(args):
 		raw_data.append(good)
 	return raw_data
 
+
 def generate_file(good_names, raw_data):
 	menu = Element('menu')
+
 	for i in raw_data:
 		code = i['gas_station'].strip()
+		# print(type(code))
+		# print(type(args.object_code))
+		# try:
 		if code != args.object_code:
 			continue
-			
+		# except:
+		# 	print code
+		# 	print args.object_code
+
 		item = SubElement(menu, 'Item')
 		item_name = SubElement(item, 'Item_Name_{}'.format(i['code']))
 		item_name.text = good_names.get(code, i['name'])
 		item_price = SubElement(item, 'Item_Price_{}'.format(i['code']))
 		item_price.text = i['retail_price']
-	print(menu)
 
-	with open(args.output_file, 'w') as f:
-		f.write(prettify(menu))
+		with open(args.output_file, 'w') as f:
+			f.write(prettify(menu))
 
-	# orderer ask do not write xml-header (<?xml version="1.0" encoding="utf8"?>)
-	lines = open(args.output_file).readlines()
-	open(args.output_file, 'w').writelines(lines[1:-1])
+		# orderer ask do not write xml-header (<?xml version="1.0" encoding="utf8"?>)
+		lines = open(args.output_file).readlines()
+		open(args.output_file, 'w').writelines(lines[1:])
+
+	
+
+	
+	
 
 
 
@@ -74,7 +86,7 @@ def log(msg):
 		f.write(report)
 
 class Args:
-	object_code = ''
+	object_code = u''
 
 	def __init__(self):
 		self.good_name_file = 'good_confirmation.xlsx' # xlsx-файл с соответствием названия блюда и его id
@@ -83,8 +95,10 @@ class Args:
 		self.object_number_file = 'object_code.txt' # файл, содержащий интересующий нас номер объекта
 
 		with open(self.object_number_file, 'r') as f:
+			
 			try:
-				self.object_code = f.read().strip()
+				code = f.read().strip()
+				self.object_code = code.decode('utf-8')
 			except Exception as e:
 				print(e)
 				msg = "Ошибка. Некорректно указан файл с номером объекта или файл имеет некорректное содержимое"
