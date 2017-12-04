@@ -46,22 +46,17 @@ def get_raw_data(args):
 
 
 def generate_file(good_names, raw_data):
+
 	menu = Element('menu')
 
 	for i in raw_data:
 		code = i['gas_station'].strip()
-		# print(type(code))
-		# print(type(args.object_code))
-		# try:
 		if code != args.object_code:
 			continue
-		# except:
-		# 	print code
-		# 	print args.object_code
 
 		item = SubElement(menu, 'Item')
 		item_name = SubElement(item, 'Item_Name_{}'.format(i['code']))
-		item_name.text = good_names.get(code, i['name'])
+		item_name.text = good_names.get(int(i['code']), i['name'])
 		item_price = SubElement(item, 'Item_Price_{}'.format(i['code']))
 		item_price.text = i['retail_price']
 
