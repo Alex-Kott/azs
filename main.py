@@ -4,6 +4,7 @@ import argparse
 from xml.etree.ElementTree import Element, SubElement, tostring, parse
 import xml.dom.minidom as minidom
 import datetime
+import re
 
 import xlrd
 
@@ -51,7 +52,9 @@ def generate_file(good_names, raw_data):
 
 	for i in raw_data:
 		code = i['gas_station'].strip()
-		if code != args.object_code:
+		int_code = re.findall(r'\d+', code)[0]
+
+		if int_code != args.object_code:
 			continue
 
 		item = SubElement(menu, 'Item')
@@ -93,7 +96,8 @@ class Args:
 			
 			try:
 				code = f.read().strip()
-				self.object_code = code.decode('utf-8')
+				int_code = re.findall(r'\d+', code.decode('utf-8'))[0]
+				self.object_code = int_code
 			except Exception as e:
 				print(e)
 				msg = "Ошибка. Некорректно указан файл с номером объекта или файл имеет некорректное содержимое"
