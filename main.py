@@ -53,14 +53,13 @@ def generate_file(good_names, raw_data):
 	for i in raw_data:
 		code = i['gas_station'].strip()
 		int_code = re.findall(r'\d+', code)[0]
-
+		
 		if int_code != args.object_code:
 			continue
-
-		item = SubElement(menu, 'Item')
-		item_name = SubElement(item, 'Item_Name_{}'.format(i['code']))
+		# item = SubElement(menu, 'Item')
+		item_name = SubElement(menu, 'Item_Name_{}'.format(i['code']))
 		item_name.text = good_names.get(int(i['code']), i['name'])
-		item_price = SubElement(item, 'Item_Price_{}'.format(i['code']))
+		item_price = SubElement(menu, 'Item_Price_{}'.format(i['code']))
 		item_price.text = i['retail_price']
 
 		with open(args.output_file, 'w') as f:
@@ -88,7 +87,7 @@ class Args:
 
 	def __init__(self):
 		self.good_name_file = 'good_confirmation.xlsx' # xlsx-файл с соответствием названия блюда и его id
-		self.raw_file = 'raw_data.xml' # xml-файл с информацией о блюдах
+		self.raw_file = 'Retail-Prices.xml' # xml-файл с информацией о блюдах
 		self.output_file = 'output.xml' # файл, куда будет выводиться результат
 		self.object_number_file = 'object_code.txt' # файл, содержащий интересующий нас номер объекта
 
