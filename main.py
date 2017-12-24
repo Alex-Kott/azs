@@ -5,6 +5,8 @@ from xml.etree.ElementTree import Element, SubElement, tostring, parse
 import xml.dom.minidom as minidom
 import datetime
 import re
+import os
+from urllib2 import urlopen
 
 import xlrd
 
@@ -70,8 +72,18 @@ def generate_file(good_names, raw_data):
 		open(args.output_file, 'w').writelines(lines[1:])
 
 	
+def download_file(file_link):
+	file_name = os.path.basename(file_link)
+	try:
+		f = urlopen(file_link)
+		local_file_name = file_name
+		local_file = open(local_file_name, "wb")
+		local_file.write(f.read())
+		local_file.close()
+		f.close()
+	finally:
+		return file_name
 
-	
 	
 
 
@@ -86,10 +98,16 @@ class Args:
 	object_code = u''
 
 	def __init__(self):
-		self.good_name_file = 'good_confirmation.xlsx' # xlsx-файл с соответствием названия блюда и его id
-		self.raw_file = 'Retail-Prices.xml' # xml-файл с информацией о блюдах
+		self.good_name_file = 'http://localhost:8001/good_confirmation.xlsx' # xlsx-файл с соответствием названия блюда и его id
+		self.raw_file = 'http://localhost:8001/Retail-Prices.xml' # xml-файл с информацией о блюдах
 		self.output_file = 'output.xml' # файл, куда будет выводиться результат
-		self.object_number_file = 'object_code.txt' # файл, содержащий интересующий нас номер объекта
+		self.object_number_file = 'http://localhost:8001/object_code.txt' # файл, содержащий интересующий нас номер объекта
+
+
+		self.good_name_file = download_file(self.good_name_file)
+		self.raw_file = download_file(self.raw_file)
+		self.object_number_file = download_file(self.object_number_file)
+
 
 		with open(self.object_number_file, 'r') as f:
 			
