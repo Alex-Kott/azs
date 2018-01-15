@@ -10,6 +10,8 @@ from urllib2 import urlopen
 
 import xlrd
 
+from functions import send_mail
+
 def check_changes():
 	return True
 
@@ -102,7 +104,7 @@ class Args:
 		self.raw_file = 'http://localhost:8001/Retail-Prices.xml' # xml-файл с информацией о блюдах
 		self.output_file = 'output.xml' # файл, куда будет выводиться результат
 		self.object_number_file = 'http://localhost:8001/object_code.txt' # файл, содержащий интересующий нас номер объекта
-
+		self.email = 'alexey.kott@gmail.com'
 
 		self.good_name_file = download_file(self.good_name_file)
 		self.raw_file = download_file(self.raw_file)
@@ -135,8 +137,13 @@ if __name__ == "__main__":
 				good_names = get_pretty_names(args)
 				raw_data = get_raw_data(args)
 				generate_file(good_names, raw_data)
-				log("Файл создан")
+
+				msg = 'Файл создан'
+				log(msg)
+				send_mail(args.email, msg, msg)
 			except:
-				log("Ошибка при создании файла")
+				msg = 'Ошибка при создании файла'
+				log(msg)
+				send_mail(args.email, msg, msg)
 		exit()
 		sleep(60*60)
