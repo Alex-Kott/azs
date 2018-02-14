@@ -64,7 +64,7 @@ def generate_file(good_names, raw_data):
 		item_name = SubElement(menu, 'Item_Name_{}'.format(i['code']))
 		item_name.text = good_names.get(int(i['code']), i['name'])
 		item_price = SubElement(menu, 'Item_Price_{}'.format(i['code']))
-		item_price.text = i['retail_price']
+		item_price.text = int(float(i['retail_price'].replace(',', '.')))
 
 		with open(args.output_file, 'w') as f:
 			f.write(prettify(menu))
